@@ -490,6 +490,58 @@ public class DBconnection {
 	    return p.executeQuery();
 	}
 	
+	public String generateRentalId() throws SQLException
+	{
+	    String rid = "R101";
+
+	    String sql = "SELECT rid FROM rental ORDER BY rid DESC LIMIT 1";
+
+	    PreparedStatement p = c.prepareStatement(sql);
+
+	    ResultSet r = p.executeQuery();
+
+	    if(r.next())
+	    {
+	        String lastId = r.getString("rid");
+
+	        int number = Integer.parseInt(lastId.substring(1));
+
+	        number++;
+
+	        rid = "R" + number;
+	    }
+
+	    r.close();
+	    p.close();
+
+	    return rid;
+	}
+	
+	public void deleteReceipt(String rid) throws SQLException
+	{
+		PreparedStatement p = c.prepareStatement("delete from receipt where rid = ?");
+
+		p.setString(1, rid);
+
+		p.executeUpdate();
+	}
+	
+	public ResultSet getAllReceipts() throws SQLException
+	{
+		PreparedStatement p = c.prepareStatement("select * from receipt");
+
+		return p.executeQuery();
+	}
+	
+	public ResultSet getReceiptsByCustomerId(String cid) throws SQLException
+	{
+		PreparedStatement p = c.prepareStatement("select * from receipt where cid = ?");
+
+		p.setString(1, cid);
+
+		return p.executeQuery();
+	}
+	
 //	public int getTotalCustomers() throws SQLException {
 //
 //	    PreparedStatement p = c.prepareStatement("SELECT COUNT(*) FROM customer");

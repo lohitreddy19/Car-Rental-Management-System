@@ -1,6 +1,7 @@
 package miniguiproject1;
 
 import java.awt.event.ActionEvent;
+import java.time.LocalDate;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.awt.Color;
@@ -17,12 +18,10 @@ import javax.swing.JTextField;
 public class BookVehiclegui extends JFrame implements ActionListener{
 	
 	private JLabel title;
-    private JLabel rentalIdLabel;
     private JLabel customerIdLabel;
     private JLabel vehicleIdLabel;
     private JLabel daysLabel;
 
-    private JTextField rentalIdField;
     private JTextField customerIdField;
     private JTextField vehicleIdField;
     private JTextField daysField;
@@ -30,19 +29,17 @@ public class BookVehiclegui extends JFrame implements ActionListener{
     private JButton bookButton;
     private JButton clearButton;
     private JButton closeButton;
-
+    
     private RentalManager manager;
 
     public BookVehiclegui() {
 
         title = new JLabel("BOOK VEHICLE");
 
-        rentalIdLabel = new JLabel("Rental ID");
         customerIdLabel = new JLabel("Customer ID");
         vehicleIdLabel = new JLabel("Vehicle ID");
         daysLabel = new JLabel("Rental Days");
 
-        rentalIdField = new JTextField();
         customerIdField = new JTextField();
         vehicleIdField = new JTextField();
         daysField = new JTextField();
@@ -50,6 +47,8 @@ public class BookVehiclegui extends JFrame implements ActionListener{
         bookButton = new JButton("BOOK VEHICLE");
         clearButton = new JButton("CLEAR");
         closeButton = new JButton("CLOSE");
+        
+        manager = new RentalManager();
 
         setLayout(null);
 
@@ -65,13 +64,9 @@ public class BookVehiclegui extends JFrame implements ActionListener{
         title.setForeground(new Color(20, 50, 90));
         title.setHorizontalAlignment(JLabel.CENTER);
 
-        designLabel(rentalIdLabel);
         designLabel(customerIdLabel);
         designLabel(vehicleIdLabel);
         designLabel(daysLabel);
-
-        rentalIdLabel.setBounds(100, 100, 120, 40);
-        rentalIdField.setBounds(230, 100, 200, 40);
 
         customerIdLabel.setBounds(100, 160, 120, 40);
         customerIdField.setBounds(230, 160, 200, 40);
@@ -103,9 +98,6 @@ public class BookVehiclegui extends JFrame implements ActionListener{
 
         add(title);
 
-        add(rentalIdLabel);
-        add(rentalIdField);
-
         add(customerIdLabel);
         add(customerIdField);
 
@@ -122,8 +114,6 @@ public class BookVehiclegui extends JFrame implements ActionListener{
         bookButton.addActionListener(this);
         clearButton.addActionListener(this);
         closeButton.addActionListener(this);
-
-        manager = new RentalManager();
 
         setVisible(true);
     }
@@ -160,71 +150,75 @@ public class BookVehiclegui extends JFrame implements ActionListener{
         });
     }
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-		 if (e.getSource() == bookButton) {
+    @Override 
+    public void actionPerformed(ActionEvent e) {
+    	
+    	if(e.getSource() == bookButton)
+    	{
+    		String cid = customerIdField.getText();
+    		String vid = vehicleIdField.getText();
+    		String daysText = daysField.getText();
 
-	            String rid = rentalIdField.getText();
-	            String cid = customerIdField.getText();
-	            String vid = vehicleIdField.getText();
-	            String daysText = daysField.getText();
+    		if(cid.isEmpty() || vid.isEmpty() || daysText.isEmpty())
+    		{
+    			JOptionPane.showMessageDialog(this, "Please fill all fields");
+    			return;
+    		}
 
-	            if (rid.isEmpty() || cid.isEmpty() || vid.isEmpty() || daysText.isEmpty())
-	            {
-	            	 JOptionPane.showMessageDialog(this,"Please fill all fields");
-	            	 return;
-	            }
-	            
-	            try {
+    		try
+    		{
+    			int days = Integer.parseInt(daysText);
 
-	                int days = Integer.parseInt(daysText);
+    			DBconnection db = new DBconnection();
 
-	                Rental rental = manager.createRental(rid,cid,vid,days);
-	                
-	                if (rental != null) {
+    			db.connect();
 
-	                    JOptionPane.showMessageDialog(
-	                        this,
-	                        "Vehicle Booked Successfully!\n"
-	                        + "Rental ID: " + rental.getRid()
-	                        + "\nVehicle: " + rental.getVehicle().getModel()
-	                        + "\nDays: " + rental.getDays()
-	                        + "\nStart Date: " + rental.getstartDate());
+    			String rid = db.generateRentalId();
+    			
+    			Rental rental = manager.createRental(rid, cid, vid, days);
 
-	                    clearFields();
-	                } 
-	            }
-	            catch(NumberFormatException ex)
-	            {
-	            	JOptionPane.showMessageDialog(this,"Rental days must be a number");
-	            }
-	            catch(invalidRentalException ex)
-	            {
-	            	JOptionPane.showMessageDialog(this, ex.getMessage());
-	            }
-	            catch(SQLException ex)
-	            {
-	            	ex.printStackTrace();
-	            	 JOptionPane.showMessageDialog(this,"Database Error: " + ex.getMessage());
-	            }
-		 }
-		 
-		 else if (e.getSource() == clearButton)
-		 {
-	            clearFields();
-	       }
+    			if(rental != null)
+    			{
+    				JOptionPane.showMessageDialog(
+    						this,
+    						"Vehicle Booked Successfully!\n"
+    						+ "Rental ID: " + rental.getRid()
+    						+ "\nVehicle: " + rental.getVehicle().getModel()
+    						+ "\nDays: " + rental.getDays()
+    						+ "\nStart Date: " + rental.getstartDate());
 
-	        else if (e.getSource() == closeButton) 
-	        {
-	            this.dispose();
-	        }
-	    }
+    				clearFields();
+    			}
+    		}
+    		catch(NumberFormatException ex)
+    		{
+    			JOptionPane.showMessageDialog(this, "Rental days must be a number");
+    		}
+    		catch(invalidRentalException ex)
+    		{
+    			JOptionPane.showMessageDialog(this, ex.getMessage());
+    		}
+    		catch(SQLException ex)
+    		{
+    			ex.printStackTrace();
 
-	    private void clearFields() {
+    			JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
+    		}
+    	}
+    	
+    	else if(e.getSource() == clearButton)
+    	{
+    		clearFields();
+    	}
 
-	        rentalIdField.setText("");
+    	else if(e.getSource() == closeButton)
+    	{
+    		this.dispose();
+    	}
+    }
+
+	    private void clearFields() 
+	    {
 	        customerIdField.setText("");
 	        vehicleIdField.setText("");
 	        daysField.setText("");

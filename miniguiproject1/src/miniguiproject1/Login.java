@@ -12,11 +12,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 public class Login extends JFrame implements ActionListener{
@@ -24,9 +26,14 @@ public class Login extends JFrame implements ActionListener{
 	private JLabel title;
 	private JLabel emailLabel;
 	private JLabel passwordLabel;
+	private JLabel roleLabel;
 	
 	private JTextField emailField;
 	private JPasswordField passwordField;
+	
+	private JRadioButton customerRadio;
+	private JRadioButton adminRadio;
+	private ButtonGroup roleGroup;
 	
 	private JButton loginButton;
 	private JButton signupButton;
@@ -38,9 +45,15 @@ public class Login extends JFrame implements ActionListener{
 		
 		emailLabel = new JLabel("Email");
 		passwordLabel = new JLabel("password");
+		roleLabel = new JLabel("Role");
 		
 		emailField = new JTextField();
 		passwordField = new JPasswordField();
+		
+		customerRadio = new JRadioButton("Customer");
+		adminRadio = new JRadioButton("Admin");
+		
+		roleGroup = new ButtonGroup();
 		
 		loginButton = new JButton("LOGIN");
 		signupButton = new JButton("SIGN UP");
@@ -77,10 +90,40 @@ public class Login extends JFrame implements ActionListener{
 		
 		passwordField.setBounds(250, 200, 200, 40);
 		
+        roleLabel.setBounds(150, 270, 100, 40);
 		
-		loginButton.setBounds(250, 270, 120, 40);
+		roleLabel.setFont(new Font("Arial", Font.BOLD, 16));
 		
-		signupButton.setBounds(250, 350, 120, 40);
+		roleLabel.setForeground(new Color(20, 50, 90));
+		
+		
+		customerRadio.setBounds(250, 270, 100, 40);
+		
+		customerRadio.setBackground(new Color(245, 248, 252));
+		
+		customerRadio.setForeground(new Color(20, 50, 90));
+		
+		customerRadio.setFont(new Font("Arial", Font.BOLD, 14));
+		
+		
+		adminRadio.setBounds(360, 270, 90, 40);
+		
+		adminRadio.setBackground(new Color(245, 248, 252));
+		
+		adminRadio.setForeground(new Color(20, 50, 90));
+		
+		adminRadio.setFont(new Font("Arial", Font.BOLD, 14));
+		
+		
+		roleGroup.add(customerRadio);
+		roleGroup.add(adminRadio);
+		
+		customerRadio.setSelected(true);
+		
+		
+		loginButton.setBounds(250, 340, 120, 40);
+
+		signupButton.setBounds(250, 410, 120, 40);
 		
 		
 		add(title);
@@ -90,6 +133,10 @@ public class Login extends JFrame implements ActionListener{
 		
 		add(passwordLabel);
 		add(passwordField);
+		
+		add(roleLabel);
+		add(customerRadio);
+		add(adminRadio);
 		
 		add(loginButton);
 		add(signupButton);
@@ -245,9 +292,8 @@ public class Login extends JFrame implements ActionListener{
 		}
 			catch(Exception ee)
 			{
-				ee.printStackTrace();
-				
-				JOptionPane.showMessageDialog(this, "DataBase error: " + ee.getMessage());
+			    ee.printStackTrace();
+			    JOptionPane.showMessageDialog(this, "Database error:\n" + ee.toString());
 			}
 			
 			System.out.println("Username: " + Username);

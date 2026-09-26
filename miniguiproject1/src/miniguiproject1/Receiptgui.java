@@ -6,186 +6,227 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 public class Receiptgui extends JFrame implements ActionListener{
 	
 	private JLabel title;
-    private JLabel receiptIdLabel;
-    private JLabel paymentIdLabel;
-    private JLabel rentalIdLabel;
-    private JLabel customerLabel;
-    private JLabel vehicleLabel;
-    private JLabel methodLabel;
-    private JLabel statusLabel;
-    private JLabel amountLabel;
+	private JLabel customerIdLabel;
+	private JLabel receiptIdLabel;
 
-    private JTextField receiptIdField;
-    private JTextField paymentIdField;
-    private JTextField rentalIdField;
-    private JTextField customerField;
-    private JTextField vehicleField;
-    private JTextField methodField;
-    private JTextField statusField;
-    private JTextField amountField;
+	private JTextField customerIdField;
+	private JTextField receiptIdField;
 
-    private JButton searchButton;
-    private JButton printButton;
-    
-    private DBconnection db;
-    private String rid;
+	private JButton viewAllButton;
+	private JButton searchButton;
+	private JButton detailsButton;
+	private JButton printButton;
+	private JButton deleteButton;
+	private JButton closeButton;
+
+	private JTable receiptTable;
+	private JScrollPane scrollPane;
+
+	private DefaultTableModel model;
+
+	private DBconnection db;
     
     public Receiptgui()
     {
-    	 title = new JLabel("RECEIPT");
+    	title = new JLabel("RECEIPT");
 
-         receiptIdLabel = new JLabel("Receipt ID");
-         paymentIdLabel = new JLabel("Payment ID");
-         rentalIdLabel = new JLabel("Rental ID");
-         customerLabel = new JLabel("Customer");
-         vehicleLabel = new JLabel("Vehicle");
-         methodLabel = new JLabel("Payment Method");
-         statusLabel = new JLabel("Payment Status");
-         amountLabel = new JLabel("Total Amount");
+    	customerIdLabel = new JLabel("Customer ID");
+ 		receiptIdLabel = new JLabel("Receipt ID");
 
-         receiptIdField = new JTextField();
-         paymentIdField = new JTextField();
-         rentalIdField = new JTextField();
-         customerField = new JTextField();
-         vehicleField = new JTextField();
-         methodField = new JTextField();
-         statusField = new JTextField();
-         amountField = new JTextField();
+ 		customerIdField = new JTextField();
+ 		receiptIdField = new JTextField();
 
-         paymentIdField.setEditable(false);
-         rentalIdField.setEditable(false);
-         customerField.setEditable(false);
-         vehicleField.setEditable(false);
-         methodField.setEditable(false);
-         statusField.setEditable(false);
-         amountField.setEditable(false);
+ 		viewAllButton = new JButton("VIEW ALL");
+ 		searchButton = new JButton("SEARCH");
+ 		detailsButton = new JButton("VIEW DETAILS");
+ 		printButton = new JButton("PRINT");
+ 		deleteButton = new JButton("DELETE");
+ 		closeButton = new JButton("CLOSE");
 
-         searchButton = new JButton("Search");
-         printButton = new JButton("Print Receipt");
+ 		model = new DefaultTableModel();
+
+ 		receiptTable = new JTable(model);
+
+ 		scrollPane = new JScrollPane(receiptTable);
 
          setLayout(null);
 
          getContentPane().setBackground(new Color(245, 248, 252));
 
-         title.setBounds(240, 25, 150, 40);
+ 		title.setBounds(190, 20, 250, 40);
 
-         title.setFont(new Font("Arial", Font.BOLD, 30));
+ 		title.setFont(new Font("Arial", Font.BOLD, 25));
 
-         title.setForeground(new Color(20, 50, 90));
+ 		title.setForeground(new Color(20, 50, 90));
 
-         title.setHorizontalAlignment(JLabel.CENTER);
+ 		title.setHorizontalAlignment(JLabel.CENTER);
+
+ 		customerIdLabel.setBounds(40, 80, 100, 30);
+
+ 		customerIdField.setBounds(140, 80, 150, 30);
 
 
-         receiptIdLabel.setBounds(80, 80, 130, 30);
-         receiptIdField.setBounds(220, 80, 200, 30);
-         searchButton.setBounds(430, 80, 100, 30);
+ 		searchButton.setBounds(300, 80, 100, 30);
 
-         paymentIdLabel.setBounds(80, 125, 130, 30);
-         paymentIdField.setBounds(220, 125, 200, 30);
+ 		viewAllButton.setBounds(410, 80, 120, 30);
 
-         rentalIdLabel.setBounds(80, 170, 130, 30);
-         rentalIdField.setBounds(220, 170, 200, 30);
 
-         customerLabel.setBounds(80, 215, 130, 30);
-         customerField.setBounds(220, 215, 200, 30);
+ 		receiptIdLabel.setBounds(40, 125, 100, 30);
 
-         vehicleLabel.setBounds(80, 260, 130, 30);
-         vehicleField.setBounds(220, 260, 200, 30);
+ 		receiptIdField.setBounds(140, 125, 150, 30);
 
-         methodLabel.setBounds(80, 305, 130, 30);
-         methodField.setBounds(220, 305, 200, 30);
 
-         statusLabel.setBounds(80, 350, 130, 30);
-         statusField.setBounds(220, 350, 200, 30);
+ 		detailsButton.setBounds(300, 125, 120, 30);
 
-         amountLabel.setBounds(80, 395, 130, 30);
-         amountField.setBounds(220, 395, 200, 30);
+ 		printButton.setBounds(430, 125, 100, 30);
 
-         printButton.setBounds(210, 450, 160, 40);
 
+ 		scrollPane.setBounds(40, 175, 490, 220);
+
+
+ 		deleteButton.setBounds(100, 420, 100, 40);
+
+ 		closeButton.setBounds(380, 420, 100, 40);
+
+ 		model.addColumn("Receipt ID");
+		model.addColumn("Payment ID");
+		model.addColumn("Customer ID");
+		model.addColumn("Vehicle ID");
+		model.addColumn("Amount");
+		
          add(title);
 
-         add(receiptIdLabel);
-         add(receiptIdField);
-         add(searchButton);
+         add(customerIdLabel);
+ 		add(customerIdField);
+ 		add(searchButton);
+ 		add(viewAllButton);
 
-         add(paymentIdLabel);
-         add(paymentIdField);
+ 		add(receiptIdLabel);
+ 		add(receiptIdField);
+ 		add(detailsButton);
+ 		add(printButton);
 
-         add(rentalIdLabel);
-         add(rentalIdField);
+ 		add(scrollPane);
 
-         add(customerLabel);
-         add(customerField);
-
-         add(vehicleLabel);
-         add(vehicleField);
-
-         add(methodLabel);
-         add(methodField);
-
-         add(statusLabel);
-         add(statusField);
-
-         add(amountLabel);
-         add(amountField);
-
-         add(printButton);
-
-         designLabel(receiptIdLabel);
-         designLabel(paymentIdLabel);
-         designLabel(rentalIdLabel);
-         designLabel(customerLabel);
-         designLabel(vehicleLabel);
-         designLabel(methodLabel);
-         designLabel(statusLabel);
-         designLabel(amountLabel);
-
-         designButton(searchButton);
-         designButton(printButton);
-
-         searchButton.setBackground(new Color(30, 120, 220));
-
-         printButton.setBackground(new Color(30, 120, 220));
+ 		add(deleteButton);
+ 		add(closeButton);
 
 
-         addHoverEffect(searchButton,
-                 new Color(30, 120, 220),
-                 new Color(15, 85, 170));
-
-         addHoverEffect(printButton,
-                 new Color(30, 120, 220),
-                 new Color(15, 85, 170));
+ 		designLabel(customerIdLabel);
+ 		designLabel(receiptIdLabel);
 
 
-         setTitle("Car Rental - Receipt");
-         setSize(600, 550);
-         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-         setLocationRelativeTo(null);
+ 		designButton(viewAllButton);
+ 		designButton(searchButton);
+ 		designButton(detailsButton);
+ 		designButton(printButton);
+ 		designButton(deleteButton);
+ 		designButton(closeButton);
 
-         db = new DBconnection();
+ 		Color blue = new Color(30, 120, 220);
+		Color hoverBlue = new Color(15, 85, 170);
 
-         try {
-             db.connect();
-         }
-         catch (SQLException e) {
-             e.printStackTrace();
-         }
+		viewAllButton.setBackground(blue);
+		searchButton.setBackground(blue);
+		detailsButton.setBackground(blue);
+		printButton.setBackground(blue);
+		deleteButton.setBackground(blue);
+		closeButton.setBackground(new Color(55, 75, 100));
 
-         searchButton.addActionListener(this);
-         printButton.addActionListener(this);
-         setVisible(true);
+
+		addHoverEffect(
+				viewAllButton,
+				blue,
+				hoverBlue);
+
+		addHoverEffect(
+				searchButton,
+				blue,
+				hoverBlue);
+
+		addHoverEffect(
+				detailsButton,
+				blue,
+				hoverBlue);
+
+		addHoverEffect(
+				printButton,
+				blue,
+				hoverBlue);
+
+		addHoverEffect(
+				deleteButton,
+				blue,
+				hoverBlue);
+
+
+		addHoverEffect(
+				closeButton,
+				new Color(55, 75, 100),
+				new Color(35, 55, 80));
+
+
+		db = new DBconnection();
+
+		try
+		{
+			db.connect();
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+
+
+		viewAllButton.addActionListener(this);
+		searchButton.addActionListener(this);
+		detailsButton.addActionListener(this);
+		printButton.addActionListener(this);
+		deleteButton.addActionListener(this);
+		closeButton.addActionListener(this);
+
+
+		receiptTable.addMouseListener(
+				new MouseAdapter()
+				{
+					@Override
+					public void mouseClicked(MouseEvent e)
+					{
+						int row = receiptTable.getSelectedRow();
+
+						if(row >= 0)
+						{
+							String rid =model.getValueAt(row, 0).toString();
+
+							receiptIdField.setText(rid);
+						}
+					}
+				});
+
+
+		setTitle("Car Rental - Receipt Management");
+
+		setSize(600, 530);
+
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		setLocationRelativeTo(null);
+
+		setVisible(true);
     }
     
     private void designLabel(JLabel label)
@@ -233,81 +274,247 @@ public class Receiptgui extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
-		 if(e.getSource() == searchButton)
-		    {
-		        String receiptId = receiptIdField.getText();
+		if(e.getSource() == viewAllButton)
+		{
+			viewAllReceipts();
+		}
 
-		        if(receiptId.isEmpty())
-		        {
-		            JOptionPane.showMessageDialog(this, "pelase enter receipt id");
-		            return;
-		        }
-		        
-		        try
-		        {
-		        	Receipt r = db.findReceipt(receiptId);
-		        	
-		        	if(r == null)
-		        	{
-		        		JOptionPane.showMessageDialog(this, "receipt not found");
-		        		return;
-		        	}
-		        	
-		        	paymentIdField.setText(r.getPayment().getPid());
-		        	rentalIdField.setText(r.getPayment().getRental().getRid());
-		        	customerField.setText(r.getCustomer().getCname());
-		        	vehicleField.setText(r.getVehicle().getModel());
-		        	methodField.setText(r.getPayment().getPmethod());
-		        	statusField.setText(r.getPayment().getstatus());
-		        	amountField.setText(String.valueOf(r.getTotalamount()));
-		        	
-		        	JOptionPane.showMessageDialog(this,  "receipt found successfully");
-		        }
-		        catch(SQLException e1)
-		        {
-		        	e1.printStackTrace();
-		        	
-		        	JOptionPane.showMessageDialog(this, "database error: " + e1.getMessage());
-		        }
-		    }
-		 else if(e.getSource() == printButton)
-		 {
-			 String receiptId = receiptIdField.getText();
-			 
-			 if(receiptId.isEmpty())
-			 {
-				 JOptionPane.showMessageDialog(this, "please enter receipt id");
-				 return;
-			 }
-			 
-			 try
-			 {
-				 Receipt r = db.findReceipt(receiptId);
-				 
-				 if(r == null)
-				 {
-					 JOptionPane.showMessageDialog(this, "receipt not found");
-					 return;
-				 }
-				 
-				 r.printreceipt();
-				 
-				 JOptionPane.showMessageDialog(this,  "RECEIPT\n\n"
-				            + "Receipt ID: " + r.getRid()
-				            + "\nPayment ID: " + r.getPayment().getPid()
-				            + "\nRental ID: " + r.getPayment().getRental().getRid()
-				            + "\nCustomer: " + r.getCustomer().getCname()
-				            + "\nVehicle: " + r.getVehicle().getModel()
-				            + "\nPayment Method: " + r.getPayment().getPmethod()
-				            + "\nPayment Status: " + r.getPayment().getstatus()
-				            + "\nTotal Amount: ₹" + r.getTotalamount());
-			 }
-			 catch(SQLException e1)
-			 {
-				 e1.printStackTrace();
-				 
-				 JOptionPane.showMessageDialog(this, "database error: " + e1.getMessage());
-			 }
-		 }
+		else if(e.getSource() == searchButton)
+		{
+			searchByCustomer();
+		}
+
+		else if(e.getSource() == detailsButton)
+		{
+			viewDetails();
+		}
+
+		else if(e.getSource() == printButton)
+		{
+			printReceipt();
+		}
+
+		else if(e.getSource() == deleteButton)
+		{
+			deleteReceipt();
+		}
+
+		else if(e.getSource() == closeButton)
+		{
+			this.dispose();
+		}
 	}
+	
+	private void viewAllReceipts()
+	{
+		model.setRowCount(0);
+
+		try
+		{
+			ResultSet rs = db.getAllReceipts();
+
+			while(rs.next())
+			{
+				model.addRow(new Object[]
+				{
+					rs.getString("rid"),
+					rs.getString("pid"),
+					rs.getString("cid"),
+					rs.getString("vid"),
+					rs.getDouble("totalamount")
+				});
+			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+
+			JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+		}
+	}
+	
+	private void searchByCustomer()
+	{
+		String cid =customerIdField.getText();
+
+		if(cid.isEmpty())
+		{
+			JOptionPane.showMessageDialog(this, "Please enter Customer ID");
+
+			return;
+		}
+
+		model.setRowCount(0);
+
+		try
+		{
+			ResultSet rs = db.getReceiptsByCustomerId(cid);
+
+			boolean found = false;
+
+			while(rs.next())
+			{
+				found = true;
+
+				model.addRow(new Object[]
+				{
+					rs.getString("rid"),
+					rs.getString("pid"),
+					rs.getString("cid"),
+					rs.getString("vid"),
+					rs.getDouble("totalamount")
+				});
+			}
+
+			if(!found)
+			{
+				JOptionPane.showMessageDialog(this, "No receipts found for Customer ID " + cid);
+			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+
+			JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+		}
+	}
+	
+	private void viewDetails()
+	{
+		String rid = receiptIdField.getText();
+
+		if(rid.isEmpty())
+		{
+			JOptionPane.showMessageDialog(this, "Please select or enter Receipt ID");
+
+			return;
+		}
+
+		try
+		{
+			Receipt r =db.findReceipt(rid);
+
+			if(r == null)
+			{
+				JOptionPane.showMessageDialog(this, "Receipt not found");
+
+				return;
+			}
+
+			JOptionPane.showMessageDialog(
+					this,
+					"RECEIPT DETAILS\n\n"
+					+ "Receipt ID: "
+					+ r.getRid()
+					+ "\nPayment ID: "
+					+ r.getPayment().getPid()
+					+ "\nRental ID: "
+					+ r.getPayment()
+						.getRental().getRid()
+					+ "\nCustomer: "
+					+ r.getCustomer().getCname()
+					+ "\nVehicle: "
+					+ r.getVehicle().getModel()
+					+ "\nPayment Method: "
+					+ r.getPayment().getPmethod()
+					+ "\nPayment Status: "
+					+ r.getPayment().getstatus()
+					+ "\nTotal Amount: ₹"
+					+ r.getTotalamount());
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+
+			JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+		}
+	}
+
+	private void printReceipt()
+	{
+		String rid = receiptIdField.getText();
+
+		if(rid.isEmpty())
+		{
+			JOptionPane.showMessageDialog(this, "Please select or enter Receipt ID");
+			return;
+		}
+
+		try
+		{
+			Receipt r = db.findReceipt(rid);
+
+			if(r == null)
+			{
+				JOptionPane.showMessageDialog(this, "Receipt not found");
+				return;
+			}
+
+			r.printreceipt();
+
+			JOptionPane.showMessageDialog(
+					this,
+					"RECEIPT\n\n"
+					+ "Receipt ID: "
+					+ r.getRid()
+					+ "\nPayment ID: "
+					+ r.getPayment().getPid()
+					+ "\nRental ID: "
+					+ r.getPayment()
+						.getRental().getRid()
+					+ "\nCustomer: "
+					+ r.getCustomer().getCname()
+					+ "\nVehicle: "
+					+ r.getVehicle().getModel()
+					+ "\nPayment Method: "
+					+ r.getPayment().getPmethod()
+					+ "\nPayment Status: "
+					+ r.getPayment().getstatus()
+					+ "\nTotal Amount: ₹"
+					+ r.getTotalamount());
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+		}
+	}
+	
+	private void deleteReceipt()
+	{
+		String rid = receiptIdField.getText();
+
+		if(rid.isEmpty())
+		{
+			JOptionPane.showMessageDialog(this, "Please select a receipt");
+			return;
+		}
+
+		int result =
+				JOptionPane.showConfirmDialog(
+						this,
+						"Delete Receipt "
+						+ rid + "?",
+						"Confirm Delete",
+						JOptionPane.YES_NO_OPTION);
+
+		if(result != JOptionPane.YES_OPTION)
+		{
+			return;
+		}
+
+		try
+		{
+			db.deleteReceipt(rid);
+			JOptionPane.showMessageDialog(this, "Receipt deleted successfully");
+			receiptIdField.setText("");
+			viewAllReceipts();
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+		}
+	}
+
 }
